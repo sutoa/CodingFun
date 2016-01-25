@@ -1,9 +1,8 @@
 package codingfun;
 
-import com.google.common.collect.ImmutableList;
-
 import java.util.List;
 
+import static com.google.common.collect.ImmutableList.copyOf;
 import static com.google.common.collect.Lists.newArrayList;
 
 /**
@@ -17,22 +16,21 @@ public class SubArrayFinder {
     private Integer currentIndex;
     private List<Integer> copyOfNumbers;
 
-    public List<Integer> findMaxSubArray(List<Integer> numbers) {
+    public List<Integer> findSubArrayWithMaxSum(List<Integer> numbers) {
         if(numbers.isEmpty()) return newArrayList();
 
-        copyOfNumbers = ImmutableList.copyOf(numbers);
+        copyOfNumbers = copyOf(numbers);
 
         for (int i = 0; i < copyOfNumbers.size(); i++) {
             currentIndex = i;
-            if (wouldCurrentRunningSumMakeTotalGreater()) {
+            if (wouldRunningSumMakeSubArraySumLarger()) {
                 addCurrentNodeToRunningSum();
-                if (newSubStringMaxFound()) {
-                    updateMaxSubString();
+                if (newSubArrayMaxSumFound()) {
+                    updateMaxSubArray();
                 }
             } else {
-                restartSubStringFromCurrentNode();
+                restartSubArrayFromCurrentNode();
             }
-
         }
         return copyOfNumbers.subList(maxSubArrayBeginIdx, maxSubArrayEndIdx + 1);
     }
@@ -41,23 +39,23 @@ public class SubArrayFinder {
         runningSum = copyOfNumbers.get(currentIndex) + runningSum;
     }
 
-    private void restartSubStringFromCurrentNode() {
+    private void restartSubArrayFromCurrentNode() {
         runningSum = copyOfNumbers.get(currentIndex);
         maxSumForSubString = runningSum;
         maxSubArrayBeginIdx = currentIndex;
         maxSubArrayEndIdx = currentIndex;
     }
 
-    private void updateMaxSubString() {
+    private void updateMaxSubArray() {
         maxSumForSubString = runningSum;
         maxSubArrayEndIdx = currentIndex;
     }
 
-    private boolean newSubStringMaxFound() {
+    private boolean newSubArrayMaxSumFound() {
         return runningSum > maxSumForSubString;
     }
 
-    private boolean wouldCurrentRunningSumMakeTotalGreater() {
+    private boolean wouldRunningSumMakeSubArraySumLarger() {
         return runningSum > 0;
     }
 
