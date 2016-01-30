@@ -9,12 +9,14 @@ import static com.google.common.collect.Lists.newArrayList;
  * UnThreadSafe solution - to avoid passing parameters around during refactoring
  */
 public class SubArrayFinder {
-    private Integer maxSumForSubString = Integer.MIN_VALUE;
+    private Integer maxSumForSubArray = Integer.MIN_VALUE;
     private Integer runningSum = 0;
-    private Integer maxSubArrayBeginIdx;
-    private Integer maxSubArrayEndIdx;
+    private Integer maxSubArrayBeginIdx = 0;
+    private Integer maxSubArrayEndIdx = 0;
     private Integer currentIndex;
     private List<Integer> copyOfNumbers;
+    private Integer beginIdx;
+    private Integer endIdx;
 
     public List<Integer> findSubArrayWithMaxSum(List<Integer> numbers) {
         if(numbers.isEmpty()) return newArrayList();
@@ -24,35 +26,41 @@ public class SubArrayFinder {
         for (int i = 0; i < copyOfNumbers.size(); i++) {
             currentIndex = i;
             if (wouldRunningSumMakeSubArraySumLarger()) {
-                addCurrentNodeToRunningSum();
-                if (newSubArrayMaxSumFound()) {
-                    updateMaxSubArray();
-                }
+                extendSubArray();
+                checkForNewMax();
             } else {
-                restartSubArrayFromCurrentNode();
+                restartSubArray();
+                checkForNewMax();
             }
         }
         return copyOfNumbers.subList(maxSubArrayBeginIdx, maxSubArrayEndIdx + 1);
     }
 
-    private void addCurrentNodeToRunningSum() {
+    private void checkForNewMax() {
+        if (newSubArrayMaxSumFound()) {
+            maxSubArrayIsCurrentSubArray();
+        }
+    }
+
+    private void extendSubArray() {
         runningSum = copyOfNumbers.get(currentIndex) + runningSum;
+        endIdx = currentIndex;
     }
 
-    private void restartSubArrayFromCurrentNode() {
+    private void restartSubArray() {
         runningSum = copyOfNumbers.get(currentIndex);
-        maxSumForSubString = runningSum;
-        maxSubArrayBeginIdx = currentIndex;
-        maxSubArrayEndIdx = currentIndex;
+        beginIdx = currentIndex;
+        endIdx = currentIndex;
     }
 
-    private void updateMaxSubArray() {
-        maxSumForSubString = runningSum;
-        maxSubArrayEndIdx = currentIndex;
+    private void maxSubArrayIsCurrentSubArray() {
+        maxSumForSubArray = runningSum;
+        maxSubArrayBeginIdx = beginIdx;
+        maxSubArrayEndIdx = endIdx;
     }
 
     private boolean newSubArrayMaxSumFound() {
-        return runningSum > maxSumForSubString;
+        return runningSum > maxSumForSubArray;
     }
 
     private boolean wouldRunningSumMakeSubArraySumLarger() {

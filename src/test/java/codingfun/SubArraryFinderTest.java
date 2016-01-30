@@ -24,8 +24,8 @@ public class SubArraryFinderTest {
 
     @Test
     public void maxSubArrayIsTheMaxNumberIfArrayContainsAllNegatives() throws Exception {
-        final List<Integer> numbers = Arrays.asList(-2, -1);
-        assertThat(subArrayFinder.findSubArrayWithMaxSum(numbers)).isEqualTo(Arrays.asList(-1));
+        final List<Integer> numbers = Arrays.asList(-4, -3, -5);
+        assertThat(subArrayFinder.findSubArrayWithMaxSum(numbers)).isEqualTo(Arrays.asList(-3));
     }
 
     @Test
@@ -39,5 +39,11 @@ public class SubArraryFinderTest {
         final List<Integer> numbers = Arrays.asList();
         assertThat(subArrayFinder.findSubArrayWithMaxSum(numbers)).isEqualTo(Arrays.asList());
 
+    }
+
+    @Test
+    public void dimitrisTest() throws Exception {
+        final List<Integer> numbers = Arrays.asList(-2, 1, -3, 4, -1, 2, 1, -15, 4, 1, -9);
+        assertThat(subArrayFinder.findSubArrayWithMaxSum(numbers)).isEqualTo(Arrays.asList(4, -1, 2, 1));
     }
 }
