@@ -3,38 +3,55 @@ package codingfun;
 import com.google.common.base.Function;
 import com.google.common.base.Predicate;
 
+import java.util.Comparator;
 import java.util.List;
+import java.util.Optional;
 import java.util.Set;
 
+import static codingfun.Sack.anEmptySack;
 import static com.google.common.collect.FluentIterable.from;
-import static java.util.Collections.max;
 
 public class KnapsackOptimizer {
-    public int findMaxValueForWeight(final Set<List<Integer>> packages, final int maxWeight) {
-        final Set<List<Integer>> smallPackages = findPackagesSmallerThanCapacity(packages, maxWeight);
+    public Sack findSackWithMaxValueForWeight(final Set<ValuePackage> packages, final int maxWeight) {
 
-        if (smallPackages.isEmpty()) return 0;
+        final Set<ValuePackage> smallPackages = findPackagesSmallerThanCapacity(packages, maxWeight);
 
-        final List<Integer> valueAmounts = calculateAmount(packages, maxWeight, smallPackages);
+        if (smallPackages.isEmpty()) return anEmptySack();
 
-        return max(valueAmounts);
+        final List<Sack> valueAmounts = addSmallPackagesToSack(packages, maxWeight, smallPackages);
+
+        return pickMostValuableSack(valueAmounts).get();
+
     }
 
-    private List<Integer> calculateAmount(final Set<List<Integer>> packages, final int maxWeight, Set<List<Integer>> smallPackages) {
+    private Optional<Sack> pickMostValuableSack(List<Sack> valueAmounts) {
+        return valueAmounts.stream().max(new Comparator<Sack>() {
+            @Override
+            public int compare(Sack o1, Sack o2) {
+                return o1.value() - o2.value();
+            }
+        });
+    }
+
+    private List<Sack> addSmallPackagesToSack(final Set<ValuePackage> packages, final int maxWeight, Set<ValuePackage> smallPackages) {
         return from(smallPackages)
-                .transform(new Function<List<Integer>, Integer>() {
-                    public Integer apply(List<Integer> pac) {
-                        return pac.get(1) + findMaxValueForWeight(packages, maxWeight - pac.get(0));
+                .transform(new Function<ValuePackage, Sack>() {
+                    @Override
+                    public Sack apply(ValuePackage valuePackage) {
+                        final Sack sackWithMaxValueForWeight = findSackWithMaxValueForWeight(packages, maxWeight - valuePackage.weight());
+                        sackWithMaxValueForWeight.add(valuePackage);
+                        return sackWithMaxValueForWeight;
                     }
                 }).toImmutableList();
     }
 
-    private Set<List<Integer>> findPackagesSmallerThanCapacity(Set<List<Integer>> packages, final int maxWeight) {
+    private Set<ValuePackage> findPackagesSmallerThanCapacity(Set<ValuePackage> packages, final int maxWeight) {
         return from(packages)
-                .filter(new Predicate<List<Integer>>() {
-                    public boolean apply(List<Integer> weightAndValue) {
-                        return weightAndValue.get(0) <= maxWeight;
+                .filter(new Predicate<ValuePackage>() {
+                    public boolean apply(ValuePackage valuePackage) {
+                        return valuePackage.weight() <= maxWeight;
                     }
                 }).toImmutableSet();
     }
+
 }

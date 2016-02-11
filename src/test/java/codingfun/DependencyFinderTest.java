@@ -5,6 +5,7 @@ import com.google.common.collect.ImmutableSet;
 import com.google.common.collect.LinkedHashMultimap;
 import com.google.common.collect.Multimap;
 import org.junit.Before;
+import org.junit.Ignore;
 import org.junit.Test;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -67,6 +68,8 @@ public class DependencyFinderTest {
         assertThat(dependencyFinder.findBuildOrder(dependencies)).isEqualTo(ImmutableList.of("F", "B", "C", "A", "D", "E", "G"));
     }
 
+
+    @Ignore
     @Test
     public void buildIndependentModulesInParallel() throws Exception {
         dependencies.putAll("A", ImmutableSet.of("B", "C", "F"));
